@@ -65,20 +65,21 @@ install:
 before_script:
   - eval "${COMPILER_ENV}"
   - CMAKE=/usr/bin/cmake
+  - CTEST=/usr/bin/ctest
 
 script:
   - mkdir build-debug && pushd build-debug
   - INSTALL_PREFIX=$(pwd)/Install
-  - $CMAKE .. -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_BUILD_TYPE=Debug
+  - $CMAKE .. -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_BUILD_TYPE=Debug -DMyLib_Test=ON
   - $CMAKE --build . --parallel
   - $CMAKE --install .
-  - $INSTALL_PREFIX/bin/MyCppLibTemplate
+  - $CTEST
   - popd
   - mkdir build-release && pushd build-release
   - INSTALL_PREFIX=$(pwd)/Install
-  - $CMAKE .. -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_BUILD_TYPE=Release
+  - $CMAKE .. -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_BUILD_TYPE=Release -DMyLib_Test=ON
   - $CMAKE --build . --parallel
   - $CMAKE --install .
-  - $INSTALL_PREFIX/bin/MyCppLibTemplate
+  - $CTEST
   - popd
   - conan create . Chino/Testing
