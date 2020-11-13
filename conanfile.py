@@ -26,7 +26,7 @@ class MyCppLibTemplateConan(ConanFile):
 
     def requirements(self):
         if self.options.MyLib_Test:
-            self.requires("Catch2/2.11.1@catchorg/stable", "private")
+            self.requires("catch2/3.0.0@catchorg/stable", "private")
 
     def config_options(self):
         if self.settings.os == "Windows":

@@ -59,8 +59,6 @@ install:
   - sudo python3 -m pip install -U conan
   - conan profile new default --detect --force
   - conan profile update settings.compiler.libcxx=libstdc++11 default
-  - CONAN_HOME=$(conan config home)
-  - cp conan/settings.yml $CONAN_HOME
 
 before_script:
   - eval "${COMPILER_ENV}"
