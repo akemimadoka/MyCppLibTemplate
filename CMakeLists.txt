@@ -4,17 +4,9 @@ project(MyCppLibTemplate CXX)
 
 option(MyLib_Test "Enable testing for mylib" ON)
 
+set(MyCppLibTemplateOptions MyLib_Test)
+
 set(BUILD_TESTING ${MyLib_Test} CACHE BOOL "Build testing" FORCE)
-
-macro(Normalize VAR)
-    if(${VAR})
-        set(${VAR} True)
-    else()
-        set(${VAR} False)
-    endif()
-endmacro()
-
-Normalize(MyLib_Test)
 
 if(CONAN_EXPORTED)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
@@ -35,10 +27,28 @@ else()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-    conan_cmake_run(CONANFILE conanfile.py
-                    BASIC_SETUP CMAKE_TARGETS
-                    BUILD missing
-                    OPTIONS MyLib_Test=${MyLib_Test})
+    macro(ConanCanonicalize _var _var_out)
+        if(${_var})
+            set(${_var_out} True)
+        else()
+            set(${_var_out} False)
+        endif()
+    endmacro()
+
+    set(_conan_options)
+    foreach(_option ${MyCppLibTemplateOptions})
+        ConanCanonicalize(${_option} _conan_${_option})
+        list(APPEND _conan_options "${_option}=${_conan_${_option}}")
+    endforeach()
+
+    conan_cmake_run(
+        CONANFILE conanfile.py
+        BASIC_SETUP CMAKE_TARGETS
+        BUILD missing
+        OPTIONS ${_conan_options}
+        PROFILE_AUTO all
+        ENV CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
+    )
 endif()
 
 add_subdirectory(src)
